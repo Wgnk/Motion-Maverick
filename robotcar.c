@@ -1,22 +1,10 @@
 #include <Servo.h>
 #include <AFMotor.h>
-#include<NewPing.h>           
-#define Echo A5
-#define Trig A4
+#define Echo A0
+#define Trig A1
 #define motor 10
-#define Speed 250
+#define Speed 170
 #define spoint 103
-//int Speed=250;
-//NewPing sonar(Trig, Echo); 
-/*#define RIGHT A1          // Right IR sensor connected to analog pin A2 of Arduino Uno:
-#define LEFT A2
-#define MAX_DISTANCE 200  
-unsigned int distance_value= 0;    //Variable to store ultrasonic sensor distance:
-unsigned int Right_Value = 0; //Variable to store Right IR sensor value:
-unsigned int Left_Value = 0;  //Variable to store Left IR sensor value:
-NewPing sonar(Trig,Echo, MAX_DISTANCE);  //NewPing setup of pins and maximum distance:
-
-  */
 char value;
 int distance;
 int Left;
@@ -30,7 +18,6 @@ AF_DCMotor M1(1);
 AF_DCMotor M2(2);
 AF_DCMotor M3(3);
 AF_DCMotor M4(4);
- int pos=0; 
 void setup() {
   Serial.begin(9600);
   pinMode(Trig, OUTPUT);
@@ -40,40 +27,32 @@ void setup() {
   M2.setSpeed(Speed);
   M3.setSpeed(Speed);
   M4.setSpeed(Speed);
-
-   //Serial.begin(9600); //initailize serial communication at 9600 bits per second:
- 
 }
-
-
 void loop() {
-  //Obstacle();
+  Obstacle();
   Bluetoothcontrol();
   voicecontrol();
- human();
 }
 void Bluetoothcontrol() {
   if (Serial.available() > 0) {
     value = Serial.read();
     Serial.println(value);
   }
-  if (value == 'U') {
+  if (value == 'F') {
     forward();
-  } else if (value == 'D') {
+  } else if (value == 'B') {
     backward();
   } else if (value == 'L') {
     left();
-  
   } else if (value == 'R') {
     right();
-  
   } else if (value == 'S') {
     Stop();
   }
 }
 void Obstacle() {
   distance = ultrasonic();
-  if (distance <=30) {
+  if (distance <= 12) {
     Stop();
     backward();
     delay(100);
@@ -84,21 +63,18 @@ void Obstacle() {
     R = rightsee();
     servo.write(spoint);
     if (L < R) {
-      left();
-      delay(500);
-      Stop();
-      delay(200);
-    } else if (L > R) {
       right();
       delay(500);
       Stop();
       delay(200);
+    } else if (L > R) {
+      left();
+      delay(500);
+      Stop();
+      delay(200);
     }
-  
-  } 
-  else {
+  } else {
     forward();
-    //Speed=Speed+50;
   }
 }
 void voicecontrol() {
@@ -133,54 +109,6 @@ void voicecontrol() {
       Stop();
     }
   }
-}
-void human()
-{ 
-  long duration, Distance;
-  
-  // Send ultrasonic signal
-  digitalWrite(Trig, LOW);
-  delayMicroseconds(2);
-  digitalWrite(Trig, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(Trig, LOW);
-  
-  // Receive ultrasonic signal
-  duration = pulseIn(Echo, HIGH);
-  
-  // Calculate distance in cm
-  Distance = duration * 0.034 / 2;
-  
-  // Print distance for debugging
-  Serial.print("Distance: ");
-  Serial.println(Distance);
-  
-  // If human detected within a certain range (adjust range according to your need)
-  if (Distance > 10 && Distance < 100) {
-    // Adjust robot's movement based on human's position
-    
-    // Move forward if human is straight ahead
-    if (Distance >= 30 && Distance <= 70) {
-      forward();
-    } 
-    // Move backward if human is too close
-    else if (Distance <= 30) {
-      backward();
-    } 
-    // Turn left if human is detected on the left
-    else if (Distance > 70 && Distance <= 100) {
-      left();
-    } 
-    // Turn right if human is detected on the right
-    else if (Distance >= 10 && distance < 60) {
-      right();
-    }
-  } 
-  // If human is not detected, stop
-  else{
-    Stop();
-  }
-
 }
 // Ultrasonic sensor distance reading function
 int ultrasonic() {
@@ -224,7 +152,7 @@ void Stop() {
   M4.run(RELEASE);
 }
 int rightsee() {
-  servo.write(10);
+  servo.write(20);
   delay(800);
   Left = ultrasonic();
   return Left;
