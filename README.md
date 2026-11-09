@@ -21,4 +21,7 @@ Components used:
 9) Servo Motor(1 pics)
 10) HC-05 module(1 pics)
 11)Male - Female Jumper Wire
+
+Circuit diagram :-
+
 <img width="720" height="519" alt="image" src="https://github.com/user-attachments/assets/081bc542-f8b1-4300-8c98-bbcbbf8dd291" />
